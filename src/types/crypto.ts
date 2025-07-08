@@ -1,4 +1,3 @@
-// Tipo para uma criptomoeda na listagem principal
 export interface Cryptocurrency {
   id: string;
   symbol: string;
@@ -32,7 +31,6 @@ export interface Cryptocurrency {
   last_updated: string;
 }
 
-// Tipo para os detalhes completos de uma criptomoeda
 export interface CryptocurrencyDetail {
   id: string;
   symbol: string;
@@ -207,18 +205,15 @@ export interface CryptocurrencyDetail {
   last_updated: string;
 }
 
-// Tipos para estados de loading e erro
 export interface LoadingState {
   isLoading: boolean;
   error: string | null;
 }
 
-// Tipo para os filtros de busca
 export interface SearchFilter {
   searchTerm: string;
 }
 
-// Tipo para parâmetros da API
 export interface CoinGeckoAPIParams {
   vs_currency: string;
   order: string;
@@ -227,5 +222,4 @@ export interface CoinGeckoAPIParams {
   sparkline: boolean;
 }
 
-// Tipo para resposta da API (array de cryptocurrencies)
 export type CryptocurrencyListResponse = Cryptocurrency[];

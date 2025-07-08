@@ -4,10 +4,8 @@ import {
   CoinGeckoAPIParams,
 } from "../types/crypto";
 
-// URL base da API do CoinGecko
 const BASE_URL = "https://api.coingecko.com/api/v3";
 
-// Configuração padrão para a lista de moedas
 const DEFAULT_PARAMS: CoinGeckoAPIParams = {
   vs_currency: "brl",
   order: "market_cap_desc",
@@ -16,10 +14,8 @@ const DEFAULT_PARAMS: CoinGeckoAPIParams = {
   sparkline: false,
 };
 
-// Função para buscar a lista de criptomoedas
 export const fetchCryptocurrencies = async (): Promise<Cryptocurrency[]> => {
   try {
-    // Construindo a URL com os parâmetros
     const params = new URLSearchParams({
       vs_currency: DEFAULT_PARAMS.vs_currency,
       order: DEFAULT_PARAMS.order,
@@ -30,7 +26,6 @@ export const fetchCryptocurrencies = async (): Promise<Cryptocurrency[]> => {
 
     const response = await fetch(`${BASE_URL}/coins/markets?${params}`);
 
-    // Verificando se a resposta foi bem-sucedida
     if (!response.ok) {
       throw new Error(
         `Erro na API: ${response.status} - ${response.statusText}`
@@ -40,7 +35,6 @@ export const fetchCryptocurrencies = async (): Promise<Cryptocurrency[]> => {
     const data: Cryptocurrency[] = await response.json();
     return data;
   } catch (error) {
-    // Tratamento de erro mais específico
     if (error instanceof Error) {
       throw new Error(`Falha ao buscar criptomoedas: ${error.message}`);
     } else {
@@ -49,14 +43,12 @@ export const fetchCryptocurrencies = async (): Promise<Cryptocurrency[]> => {
   }
 };
 
-// Função para buscar detalhes de uma criptomoeda específica
 export const fetchCryptocurrencyDetail = async (
   coinId: string
 ): Promise<CryptocurrencyDetail> => {
   try {
     const response = await fetch(`${BASE_URL}/coins/${coinId}`);
 
-    // Verificando se a resposta foi bem-sucedida
     if (!response.ok) {
       throw new Error(
         `Erro na API: ${response.status} - ${response.statusText}`
@@ -66,7 +58,6 @@ export const fetchCryptocurrencyDetail = async (
     const data: CryptocurrencyDetail = await response.json();
     return data;
   } catch (error) {
-    // Tratamento de erro mais específico
     if (error instanceof Error) {
       throw new Error(
         `Falha ao buscar detalhes da ${coinId}: ${error.message}`
@@ -77,7 +68,6 @@ export const fetchCryptocurrencyDetail = async (
   }
 };
 
-// Função para formatação de moeda brasileira
 export const formatBRL = (value: number): string => {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -85,7 +75,6 @@ export const formatBRL = (value: number): string => {
   }).format(value);
 };
 
-// Função para formatação de moeda americana
 export const formatUSD = (value: number): string => {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -93,7 +82,6 @@ export const formatUSD = (value: number): string => {
   }).format(value);
 };
 
-// Função para formatação de porcentagem
 export const formatPercentage = (value: number): string => {
   return new Intl.NumberFormat("pt-BR", {
     style: "percent",
@@ -102,7 +90,6 @@ export const formatPercentage = (value: number): string => {
   }).format(value / 100);
 };
 
-// Função para formatação de números grandes (market cap, volume)
 export const formatLargeNumber = (value: number): string => {
   if (value >= 1_000_000_000_000) {
     return `${(value / 1_000_000_000_000).toFixed(2)}T`;
