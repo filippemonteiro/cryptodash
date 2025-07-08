@@ -13,7 +13,7 @@ export const CryptoList: React.FC = () => {
     fetchCryptoList,
     clearListError,
     setSearchTerm,
-    getFilteredCryptocurrencies
+    getFilteredCryptocurrencies,
   } = useCryptoStore();
 
   const filteredCryptos = getFilteredCryptocurrencies();
@@ -29,39 +29,42 @@ export const CryptoList: React.FC = () => {
 
   if (isLoadingList) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-96">
         <Loading message="Carregando criptomoedas..." />
       </div>
     );
   }
 
   if (listError) {
-    const isRateLimitError = listError.includes("limite") || listError.includes("requisições");
-    
+    const isRateLimitError =
+      listError.includes("limite") || listError.includes("requisições");
+
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-        <ErrorMessage 
-          message={listError} 
+      <div className="flex items-center justify-center min-h-96 p-4">
+        <ErrorMessage
+          message={listError}
           onRetry={handleRetry}
-          retryText={isRateLimitError ? "Aguardar e tentar novamente" : "Recarregar"}
+          retryText={
+            isRateLimitError ? "Aguardar e tentar novamente" : "Recarregar"
+          }
         />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 py-6 px-4 md:px-6 lg:px-8">
+    <div className="py-6 px-4 md:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <header className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2">
-            CryptoDash
-          </h1>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+            Principais Criptomoedas
+          </h2>
           <p className="text-gray-400 text-sm md:text-base">
-            Acompanhe as principais criptomoedas do mercado
+            Acompanhe as maiores criptomoedas por capitalização de mercado
           </p>
-        </header>
+        </div>
 
-        <SearchInput 
+        <SearchInput
           value={searchTerm}
           onChange={setSearchTerm}
           placeholder="Buscar por nome ou símbolo..."
@@ -84,10 +87,9 @@ export const CryptoList: React.FC = () => {
           <>
             <div className="mb-6">
               <p className="text-gray-400 text-sm md:text-base">
-                {searchTerm 
+                {searchTerm
                   ? `${filteredCryptos.length} resultado(s) encontrado(s)`
-                  : `Exibindo ${filteredCryptos.length} criptomoedas`
-                }
+                  : `Exibindo ${filteredCryptos.length} criptomoedas`}
               </p>
             </div>
 
