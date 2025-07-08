@@ -9,8 +9,8 @@ export default defineConfig({
         target: "https://api.coingecko.com/api/v3",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
-        configure: (proxy, options) => {
-          proxy.on("proxyReq", (proxyReq, req, res) => {
+        configure: (proxy) => {
+          proxy.on("proxyReq", (proxyReq) => {
             proxyReq.setHeader("User-Agent", "CryptoDash/1.0");
           });
         },
