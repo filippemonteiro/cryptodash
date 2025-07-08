@@ -13,7 +13,7 @@ export const CryptoList: React.FC = () => {
     fetchCryptoList,
     clearListError,
     setSearchTerm,
-    getFilteredCryptocurrencies,
+    getFilteredCryptocurrencies
   } = useCryptoStore();
 
   const filteredCryptos = getFilteredCryptocurrencies();
@@ -21,6 +21,11 @@ export const CryptoList: React.FC = () => {
   useEffect(() => {
     fetchCryptoList();
   }, [fetchCryptoList]);
+
+  const handleRetry = () => {
+    clearListError();
+    fetchCryptoList();
+  };
 
   if (isLoadingList) {
     return (
@@ -31,14 +36,14 @@ export const CryptoList: React.FC = () => {
   }
 
   if (listError) {
+    const isRateLimitError = listError.includes("limite") || listError.includes("requisições");
+    
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-        <ErrorMessage
-          message={listError}
-          onRetry={() => {
-            clearListError();
-            fetchCryptoList();
-          }}
+        <ErrorMessage 
+          message={listError} 
+          onRetry={handleRetry}
+          retryText={isRateLimitError ? "Aguardar e tentar novamente" : "Recarregar"}
         />
       </div>
     );
@@ -56,7 +61,7 @@ export const CryptoList: React.FC = () => {
           </p>
         </header>
 
-        <SearchInput
+        <SearchInput 
           value={searchTerm}
           onChange={setSearchTerm}
           placeholder="Buscar por nome ou símbolo..."
@@ -79,9 +84,10 @@ export const CryptoList: React.FC = () => {
           <>
             <div className="mb-6">
               <p className="text-gray-400 text-sm md:text-base">
-                {searchTerm
+                {searchTerm 
                   ? `${filteredCryptos.length} resultado(s) encontrado(s)`
-                  : `Exibindo ${filteredCryptos.length} criptomoedas`}
+                  : `Exibindo ${filteredCryptos.length} criptomoedas`
+                }
               </p>
             </div>
 

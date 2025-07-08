@@ -39,12 +39,7 @@ export const useCryptoStore = create<CryptoStore>((set, get) => ({
 
   fetchCryptoList: async () => {
     const state = get();
-    
-    // Evita múltiplas chamadas simultâneas
-    if (state.isLoadingList) return;
-    
-    // Se já temos dados e não há erro, não recarrega
-    if (state.cryptocurrencies.length > 0 && !state.listError) return;
+    if (state.isLoadingList) return; // Evita múltiplas requisições
     
     set({ isLoadingList: true, listError: null });
     
@@ -56,7 +51,8 @@ export const useCryptoStore = create<CryptoStore>((set, get) => ({
         listError: null,
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro desconhecido";
       set({
         isLoadingList: false,
         listError: errorMessage,
@@ -72,9 +68,8 @@ export const useCryptoStore = create<CryptoStore>((set, get) => ({
   fetchCryptoDetail: async (coinId: string) => {
     const state = get();
     
-    // Evita requisições desnecessárias
-    if (state.isLoadingDetail) return;
-    if (state.currentDetailId === coinId && state.cryptoDetail && !state.detailError) return;
+    // Se já está carregando ou já temos os detalhes dessa moeda, não faz nova requisição
+    if (state.isLoadingDetail || state.currentDetailId === coinId) return;
     
     set({ 
       isLoadingDetail: true, 
@@ -91,7 +86,8 @@ export const useCryptoStore = create<CryptoStore>((set, get) => ({
         detailError: null,
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro desconhecido";
       set({
         isLoadingDetail: false,
         detailError: errorMessage,
