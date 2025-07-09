@@ -50,16 +50,12 @@ export const CryptoDetail: React.FC = () => {
   }
 
   if (detailError) {
-    const isRateLimitError =
-      detailError.includes("limite") || detailError.includes("requisições");
-
     return (
       <div className="flex items-center justify-center min-h-96 p-4">
         <ErrorMessage
           message={detailError}
           onRetry={handleRetry}
-          showHomeButton={isRateLimitError}
-          retryText={isRateLimitError ? "Tentar novamente" : "Recarregar"}
+          retryText="Tentar novamente"
         />
       </div>
     );
@@ -69,7 +65,7 @@ export const CryptoDetail: React.FC = () => {
     return (
       <div className="flex items-center justify-center min-h-96 p-4">
         <ErrorMessage
-          message="Criptomoeda não encontrada"
+          message="Esta criptomoeda não foi encontrada ou não está mais disponível. Tente acessar outra moeda da lista principal."
           showHomeButton={true}
         />
       </div>

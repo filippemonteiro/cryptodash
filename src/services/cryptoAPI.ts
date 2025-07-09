@@ -4,7 +4,6 @@ import {
   CoinGeckoAPIParams,
 } from "../types/crypto";
 
-// Usar URL direta em produção, proxy em desenvolvimento
 const BASE_URL = import.meta.env.DEV
   ? "/api"
   : "https://api.coingecko.com/api/v3";
@@ -98,19 +97,19 @@ export const fetchCryptocurrencies = async (): Promise<Cryptocurrency[]> => {
 
     if (response.status === 429) {
       throw new Error(
-        "Muitas requisições à API. Aguarde alguns minutos e recarregue a página."
+        "Muitas pessoas acessando os dados ao mesmo tempo. Aguarde alguns minutos e tente novamente."
       );
     }
 
     if (response.status === 403) {
       throw new Error(
-        "Acesso temporariamente bloqueado pela API. Aguarde alguns minutos e tente novamente."
+        "Serviço temporariamente indisponível. Aguarde alguns minutos e recarregue a página."
       );
     }
 
     if (!response.ok) {
       throw new Error(
-        `Erro na API: ${response.status}. Tente novamente em alguns minutos.`
+        `Serviço de dados indisponível no momento. Tente novamente em alguns minutos.`
       );
     }
 
@@ -123,14 +122,25 @@ export const fetchCryptocurrencies = async (): Promise<Cryptocurrency[]> => {
       if (error.message.includes("429") || error.message.includes("403")) {
         throw error;
       }
-      if (error.message.includes("CORS") || error.message.includes("network")) {
+      if (
+        error.message.includes("CORS") ||
+        error.message.includes("network") ||
+        error.message.includes("NetworkError")
+      ) {
         throw new Error(
-          "Problema de conexão com a API. Verifique sua internet e tente novamente."
+          "Problema de conexão com a internet. Verifique sua conexão e tente novamente."
+        );
+      }
+      if (error.message.includes("Failed to fetch")) {
+        throw new Error(
+          "Não foi possível carregar os dados. Verifique sua conexão com a internet."
         );
       }
       throw error;
     }
-    throw new Error("Erro inesperado ao buscar criptomoedas");
+    throw new Error(
+      "Ocorreu um problema inesperado. Tente recarregar a página."
+    );
   }
 };
 
@@ -156,19 +166,19 @@ export const fetchCryptocurrencyDetail = async (
 
     if (response.status === 429) {
       throw new Error(
-        "Muitas requisições à API. Aguarde alguns minutos e recarregue a página."
+        "Muitas pessoas acessando os dados ao mesmo tempo. Aguarde alguns minutos e tente novamente."
       );
     }
 
     if (response.status === 403) {
       throw new Error(
-        "Acesso temporariamente bloqueado pela API. Aguarde alguns minutos e tente novamente."
+        "Serviço temporariamente indisponível. Aguarde alguns minutos e recarregue a página."
       );
     }
 
     if (!response.ok) {
       throw new Error(
-        `Erro na API: ${response.status}. Tente novamente em alguns minutos.`
+        `Serviço de dados indisponível no momento. Tente novamente em alguns minutos.`
       );
     }
 
@@ -181,14 +191,25 @@ export const fetchCryptocurrencyDetail = async (
       if (error.message.includes("429") || error.message.includes("403")) {
         throw error;
       }
-      if (error.message.includes("CORS") || error.message.includes("network")) {
+      if (
+        error.message.includes("CORS") ||
+        error.message.includes("network") ||
+        error.message.includes("NetworkError")
+      ) {
         throw new Error(
-          "Problema de conexão com a API. Verifique sua internet e tente novamente."
+          "Problema de conexão com a internet. Verifique sua conexão e tente novamente."
+        );
+      }
+      if (error.message.includes("Failed to fetch")) {
+        throw new Error(
+          "Não foi possível carregar os dados. Verifique sua conexão com a internet."
         );
       }
       throw error;
     }
-    throw new Error(`Erro inesperado ao buscar detalhes de ${coinId}`);
+    throw new Error(
+      `Não foi possível carregar os detalhes desta criptomoeda. Tente novamente em alguns minutos.`
+    );
   }
 };
 
