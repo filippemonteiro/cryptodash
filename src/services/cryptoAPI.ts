@@ -4,9 +4,7 @@ import {
   CoinGeckoAPIParams,
 } from "../types/crypto";
 
-const BASE_URL = import.meta.env.DEV
-  ? "/api"
-  : "https://api.coingecko.com/api/v3";
+const BASE_URL = "/api";
 
 const DEFAULT_PARAMS: CoinGeckoAPIParams = {
   vs_currency: "brl",
@@ -28,12 +26,12 @@ type CacheValue =
 const cache = new Map<string, CacheValue>();
 
 const CACHE_TTL = {
-  LIST: 5 * 60 * 1000,
-  DETAIL: 10 * 60 * 1000,
+  LIST: 10 * 60 * 1000, // 10 minutos para lista
+  DETAIL: 30 * 60 * 1000, // 30 minutos para detalhes
 };
 
 let lastRequestTime = 0;
-const MIN_REQUEST_INTERVAL = 1000;
+const MIN_REQUEST_INTERVAL = 2000; // 2 segundos entre requisições
 
 const waitForRateLimit = async (): Promise<void> => {
   const now = Date.now();
