@@ -4,7 +4,10 @@ import {
   CoinGeckoAPIParams,
 } from "../types/crypto";
 
-const BASE_URL = "/api";
+// Usar URL direta em produção, proxy em desenvolvimento
+const BASE_URL = import.meta.env.DEV
+  ? "/api"
+  : "https://api.coingecko.com/api/v3";
 
 const DEFAULT_PARAMS: CoinGeckoAPIParams = {
   vs_currency: "brl",
@@ -26,12 +29,12 @@ type CacheValue =
 const cache = new Map<string, CacheValue>();
 
 const CACHE_TTL = {
-  LIST: 10 * 60 * 1000, // 10 minutos para lista
-  DETAIL: 30 * 60 * 1000, // 30 minutos para detalhes
+  LIST: 15 * 60 * 1000, // 15 minutos para lista
+  DETAIL: 60 * 60 * 1000, // 1 hora para detalhes
 };
 
 let lastRequestTime = 0;
-const MIN_REQUEST_INTERVAL = 2000; // 2 segundos entre requisições
+const MIN_REQUEST_INTERVAL = 3000; // 3 segundos entre requisições
 
 const waitForRateLimit = async (): Promise<void> => {
   const now = Date.now();
@@ -87,19 +90,28 @@ export const fetchCryptocurrencies = async (): Promise<Cryptocurrency[]> => {
     });
 
     const response = await fetch(`${BASE_URL}/coins/markets?${params}`, {
+      mode: "cors",
       headers: {
-        "User-Agent": "CryptoDash/1.0",
+        Accept: "application/json",
       },
     });
 
     if (response.status === 429) {
       throw new Error(
-        "Limite de requisições excedido. Aguarde alguns segundos e tente novamente."
+        "Muitas requisições à API. Aguarde alguns minutos e recarregue a página."
+      );
+    }
+
+    if (response.status === 403) {
+      throw new Error(
+        "Acesso temporariamente bloqueado pela API. Aguarde alguns minutos e tente novamente."
       );
     }
 
     if (!response.ok) {
-      throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+      throw new Error(
+        `Erro na API: ${response.status}. Tente novamente em alguns minutos.`
+      );
     }
 
     const data: Cryptocurrency[] = await response.json();
@@ -108,9 +120,12 @@ export const fetchCryptocurrencies = async (): Promise<Cryptocurrency[]> => {
     return data;
   } catch (error) {
     if (error instanceof Error) {
-      if (error.message.includes("429") || error.message.includes("limite")) {
+      if (error.message.includes("429") || error.message.includes("403")) {
+        throw error;
+      }
+      if (error.message.includes("CORS") || error.message.includes("network")) {
         throw new Error(
-          "Muitas requisições à API. Aguarde um momento e recarregue a página."
+          "Problema de conexão com a API. Verifique sua internet e tente novamente."
         );
       }
       throw error;
@@ -133,19 +148,28 @@ export const fetchCryptocurrencyDetail = async (
     await waitForRateLimit();
 
     const response = await fetch(`${BASE_URL}/coins/${coinId}`, {
+      mode: "cors",
       headers: {
-        "User-Agent": "CryptoDash/1.0",
+        Accept: "application/json",
       },
     });
 
     if (response.status === 429) {
       throw new Error(
-        "Limite de requisições excedido. Aguarde alguns segundos e tente novamente."
+        "Muitas requisições à API. Aguarde alguns minutos e recarregue a página."
+      );
+    }
+
+    if (response.status === 403) {
+      throw new Error(
+        "Acesso temporariamente bloqueado pela API. Aguarde alguns minutos e tente novamente."
       );
     }
 
     if (!response.ok) {
-      throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+      throw new Error(
+        `Erro na API: ${response.status}. Tente novamente em alguns minutos.`
+      );
     }
 
     const data: CryptocurrencyDetail = await response.json();
@@ -154,9 +178,12 @@ export const fetchCryptocurrencyDetail = async (
     return data;
   } catch (error) {
     if (error instanceof Error) {
-      if (error.message.includes("429") || error.message.includes("limite")) {
+      if (error.message.includes("429") || error.message.includes("403")) {
+        throw error;
+      }
+      if (error.message.includes("CORS") || error.message.includes("network")) {
         throw new Error(
-          "Muitas requisições à API. Aguarde um momento e tente novamente."
+          "Problema de conexão com a API. Verifique sua internet e tente novamente."
         );
       }
       throw error;
